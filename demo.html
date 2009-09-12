@@ -10,13 +10,11 @@
         <h1>This is a timepicker</h1>
         <form action="demo.html" method="post">
             <label for="time">Time: </label><input type="text" name="time" value="00:00" id="time">
-            <div id="contentBox">
-                
-            </div>
+
             <p><input type="submit" value="Continue &rarr;" /></p>
         </form>
     </div>
-    
+
     
 </body>
 <script type="text/javascript" src="http://yui.yahooapis.com/combo?3.0.0b1/build/yui/yui-min.js">
@@ -27,7 +25,6 @@
     YUI().use('timepicker', function(Y){
         var picker = new Y.Saw.Timepicker({contentBox: '#contentBox'});
         picker.render();
-        
     });
 </script>
 </html>
