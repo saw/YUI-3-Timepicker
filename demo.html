@@ -4,6 +4,7 @@
 <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
     <title>demo</title>
+    <link rel="stylesheet" href="timepicker.css" type="text/css" charset="utf-8" />
 </head>
 <body>
     <div id="main">
@@ -25,6 +26,8 @@
     YUI().use('timepicker', function(Y){
         var picker = new Y.Saw.Timepicker({contentBox: '#contentBox'});
         picker.render();
+        //picker.hide();
+        Y.get('#main').on('click', function(){ picker.hide(); });
     });
 </script>
 </html>
