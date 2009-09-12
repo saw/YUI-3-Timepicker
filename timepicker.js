@@ -1,4 +1,4 @@
-YUI.add('pd-timewidget', function(Y){
+YUI.add('timewidget', function(Y){
     
     //strings
     var DISPLAY = 'display',
@@ -140,4 +140,4 @@ YUI.add('pd-timewidget', function(Y){
     Y.namespace('Timepicker');
     Y.Timepicker = TimeHolder;
    
-});
+}, '3.0.0b1', {requires:['node', 'event']});
