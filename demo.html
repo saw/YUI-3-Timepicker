@@ -31,11 +31,20 @@
             var hour = e.hour;
             Y.get('#time').set('value', hour);
         });
-        picker.move(20,20);
+        //picker.move(20,20);
         
         function handleClick(e){
-            picker.move(e.pageX,e.pageY + 50);
-            picker.show();
+            var target =e.target;
+            if(target.test('#time')){
+                var X = target.getX();
+                var Y = target.getY()+50;
+                picker.move(X,Y);
+
+
+                picker.toggle();
+
+            }
+
         }
         
         Y.get('#main').on('click', handleClick);

@@ -140,6 +140,10 @@ YUI.add('timepicker', function(Y){
                  
               },
               
+              toggle: function(){
+                  this[(this.get('visible') ? 'hide' : 'show')]();
+              },
+              
               bindUI: function(){
                   var cb = this.get('contentBox');
                   cb.on('click', this._handleClick, this);
