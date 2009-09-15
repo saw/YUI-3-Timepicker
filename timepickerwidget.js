@@ -45,7 +45,7 @@ YUI.add('timepicker', function(Y){
         
         time:{
             value:{
-                ampm:'am',
+                ampm:null,
                 hour:0,
                 minute:0
             }
@@ -77,6 +77,10 @@ YUI.add('timepicker', function(Y){
               },
               
               destructor: function(){
+                  
+                  delete(this._model.ampm);
+                  delete(this._model.hour);
+                  delete(this._model.minute);
                   
               },
               
@@ -154,7 +158,12 @@ YUI.add('timepicker', function(Y){
                   cells.each(function(cell){
                       cell.removeClass('active');
                   });
-                  
+                  var m = this._model;
+                  for(key in time){
+                      if (time[key]){
+                          m[key][time[key]].addClass('active');
+                      }
+                  }
               }
           });
           
