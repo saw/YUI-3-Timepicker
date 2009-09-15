@@ -24,9 +24,12 @@
 
 <script type="text/javascript" charset="utf-8">
     YUI().use('timepicker', function(Y){
-        var picker = new Y.Saw.Timepicker({contentBox: '#contentBox'});
+        var picker = new Y.p.Timepicker({contentBox: '#contentBox'});
         picker.render();
-        //picker.hide();
+        picker.subscribe('timechange', function(e){
+            console.log(e);
+        });
+        picker.move(20,20);
         Y.get('#main').on('click', function(){ picker.hide(); });
     });
 </script>
