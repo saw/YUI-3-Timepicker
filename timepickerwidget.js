@@ -7,24 +7,19 @@ YUI.add('timepicker', function(Y){
     getClassName= Y.ClassNameManager.getClassName,
     NAMESPACE   = 'p',
     DISPLAY     = 'display',
-    NONE        = 'none',
     CONSTRUCTOR = 'Timepicker',
+    NONE        = 'none',
     CELL_CLASS  = 'cell',
     HOUR_CLASS  = 'hour',
     MINUTE_CLASS= 'minute',
     AMPM_CLASS  = 'ampm',
-    ROW         = 'row',
-    HOUR_ROW    = 'hourrow',
-    MINUTE_ROW  = 'minuterow',
-    AMPM_ROW    = 'ampmrow';
+    ROW         = 'row';
     
     /* utils */
     function pad(num){
         return (num < 10) ? '0' + num : num;
     };
-    
-//<span class="'+Timepicker[CELL_CLASS]+' '+Timepicker[rowId]+'">'+str+'</span>
-    
+
     function makeCell(str, rowId){
         var thisClass = Y.ClassNameManager.getClassName(Timepicker.NAME, Timepicker[str]);
         var str = '<li class="'+thisClass+' '+Timepicker[CELL_CLASS]+' '+Timepicker[rowId]+'">'+str+'</li>';
@@ -45,7 +40,7 @@ YUI.add('timepicker', function(Y){
         
         time:{
             value:{
-                ampm:null,
+                ampm:'AM',
                 hour:0,
                 minute:0
             }
@@ -72,9 +67,7 @@ YUI.add('timepicker', function(Y){
               _model : {ampm:{},hour:{},minute:{}},
         
             
-              initializer:function(){
-                 
-              },
+              initializer:function(){},
               
               destructor: function(){
                   
@@ -105,11 +98,12 @@ YUI.add('timepicker', function(Y){
                       }
                       
                   }
+                  this.fire('timechange', this.get('time'));
                   this.syncUI();
               },
               
               renderUI: function(){
-       
+                  //FIXME: This could be more efficient!
                   var cb = this.get('contentBox'),
                        m = this._model;
                   this.set('xy',[20,20]);
@@ -133,18 +127,18 @@ YUI.add('timepicker', function(Y){
                       m[MINUTE_CLASS][i] = cell;
                       row3.appendChild(cell);
                   }
-       
-
-                  cb.appendChild(row1);
-                  cb.appendChild(row2);
-                  cb.appendChild(row3);
-                 // cb.set('innerHTML', rowStrings.join(''));
+                  
+                  var parent = cb.create('<div>');
+                  
+                  parent.appendChild(row1);
+                  parent.appendChild(row2);
+                  parent.appendChild(row3);
+                  cb.appendChild(parent);
                   cb.setXY([0,0]);
                   cb.setStyle(DISPLAY, 'block');
                   
                  
               },
-
               
               bindUI: function(){
                   var cb = this.get('contentBox');

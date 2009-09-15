@@ -24,13 +24,21 @@
 
 <script type="text/javascript" charset="utf-8">
     YUI().use('timepicker', function(Y){
-        var picker = new Y.p.Timepicker({contentBox: '#contentBox'});
+        var picker = new Y.p.Timepicker({contentBox: '#contentBox', time:{hour:'2', minute:'45'}});
         picker.render();
+        picker.hide();
         picker.subscribe('timechange', function(e){
-            console.log(e);
+            var hour = e.hour;
+            Y.get('#time').set('value', hour);
         });
         picker.move(20,20);
-        Y.get('#main').on('click', function(){ picker.hide(); });
+        
+        function handleClick(e){
+            picker.move(e.pageX,e.pageY + 50);
+            picker.show();
+        }
+        
+        Y.get('#main').on('click', handleClick);
     });
 </script>
 </html>
