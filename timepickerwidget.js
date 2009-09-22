@@ -13,6 +13,7 @@ YUI.add('timepicker', function(Y){
     HOUR_CLASS  = 'hour',
     MINUTE_CLASS= 'minute',
     AMPM_CLASS  = 'ampm',
+    NAME        = 'NAME',
     ROW         = 'row';
     
     /* utils */
@@ -34,7 +35,7 @@ YUI.add('timepicker', function(Y){
          Timepicker.superclass.constructor.apply(this, arguments); 
     }        
     
-    Timepicker.NAME = 'timepicker';
+    Timepicker[NAME] = 'timepicker';
     
     Timepicker.ATTRS = {
         
@@ -54,12 +55,12 @@ YUI.add('timepicker', function(Y){
         }
     };
     
-    Timepicker[HOUR_CLASS] = getClassName(Timepicker.NAME, HOUR_CLASS);
-    Timepicker[MINUTE_CLASS] = getClassName(Timepicker.NAME, MINUTE_CLASS);
-    Timepicker[AMPM_CLASS] = getClassName(Timepicker.NAME, AMPM_CLASS);
-    Timepicker[HOUR_CLASS] = getClassName(Timepicker.NAME, HOUR_CLASS, ROW);
-    Timepicker[MINUTE_CLASS] = getClassName(Timepicker.NAME, MINUTE_CLASS, ROW);
-    Timepicker[CELL_CLASS] = getClassName(Timepicker.NAME, CELL_CLASS);
+    Timepicker[HOUR_CLASS] = getClassName(Timepicker[NAME], HOUR_CLASS);
+    Timepicker[MINUTE_CLASS] = getClassName(Timepicker[NAME], MINUTE_CLASS);
+    Timepicker[AMPM_CLASS] = getClassName(Timepicker[NAME], AMPM_CLASS);
+    Timepicker[HOUR_CLASS] = getClassName(Timepicker[NAME], HOUR_CLASS, ROW);
+    Timepicker[MINUTE_CLASS] = getClassName(Timepicker[NAME], MINUTE_CLASS, ROW);
+    Timepicker[CELL_CLASS] = getClassName(Timepicker[NAME], CELL_CLASS);
     
     
     Y.extend(Timepicker, Widget, {
@@ -106,7 +107,7 @@ YUI.add('timepicker', function(Y){
                   //FIXME: This could be more efficient!
                   var cb = this.get('contentBox'),
                        m = this._model;
-                  this.set('xy',[20,20]);
+
                   var row1 = cb.create('<ol>'),
                       row2 = cb.create('<ol>'),
                       row3 = cb.create('<ol>');
@@ -134,8 +135,7 @@ YUI.add('timepicker', function(Y){
                   parent.appendChild(row2);
                   parent.appendChild(row3);
                   cb.appendChild(parent);
-                  cb.setXY([0,0]);
-                  cb.setStyle(DISPLAY, 'block');
+            
                   
                  
               },
@@ -165,9 +165,9 @@ YUI.add('timepicker', function(Y){
               }
           });
           
-    Y.Base.build(Timepicker.NAME, Timepicker, [Y.WidgetPosition, Y.WidgetStack], {dynamic:false});
+    Y.Base.build(Timepicker.NAME, Timepicker, {dynamic:false});
     Y.namespace(NAMESPACE +'.'+CONSTRUCTOR);
     Y[NAMESPACE][CONSTRUCTOR] = Timepicker;
     
     
-}, '3.0.0b1', {requires:['oop', 'event-custom', 'attribute','base', 'dom', 'classnamemanager','widget', 'widget-position','widget-position-ext','widget-stack','event']});
+}, '3.0.0b1', {requires:['oop', 'event-custom', 'attribute','base', 'dom', 'classnamemanager','widget','event']});

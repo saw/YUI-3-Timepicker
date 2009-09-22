@@ -10,9 +10,13 @@
     <div id="main">
         <h1>This is a timepicker</h1>
         <form action="demo.html" method="post">
+            <div class="foo">
+            </div>
+
             <label for="time">Time: </label><input type="text" name="time" value="00:00" id="time">
 
             <p><input type="submit" value="Continue &rarr;" /></p>
+                        
         </form>
     </div>
 
@@ -24,7 +28,7 @@
 
 <script type="text/javascript" charset="utf-8">
     YUI().use('timepicker', function(Y){
-        var picker = new Y.p.Timepicker({contentBox: '#contentBox', time:{hour:'2', minute:'45'}});
+        var picker = new Y.p.Timepicker({contentBox: 'div.foo', time:{hour:'2', minute:'45'}});
         picker.render();
         picker.hide();
         picker.subscribe('timechange', function(e){
@@ -36,9 +40,6 @@
         function handleClick(e){
             var target =e.target;
             if(target.test('#time')){
-                var X = target.getX();
-                var Y = target.getY()+50;
-                picker.move(X,Y);
 
 
                 picker.toggle();
