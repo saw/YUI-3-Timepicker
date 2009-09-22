@@ -39,6 +39,12 @@ YUI.add('timepicker', function(Y){
     
     Timepicker.ATTRS = {
         
+        separator:{
+          value:{
+              
+          }  
+        },
+        
         time:{
             value:{
                 ampm:'AM',
@@ -78,6 +84,20 @@ YUI.add('timepicker', function(Y){
                   
               },
               
+              _syncTime:function(){
+                  var time = this.get('time'),
+                  seperator = this.get('seperator');
+                  this.set('time.fullString12hr', time.hour + seperator + time.minute + time.ampm);
+                  
+                  var hour = (time.ampm.toUpperCase == 'PM') ? time.ampm + 12 : time.ampm;
+                  
+                  if(hour == 24 || hour == 0 ) hour = Math.abs(hour-12);
+                  
+                  this.set('time.fullString24hr', hour + seperator + time.minute);
+                  
+                  this.fire('timechange', this.get('time'));
+              },
+              
               _handleClick:function(e){
           
                   if(e.target.test('.'+Timepicker[CELL_CLASS])){
@@ -99,7 +119,8 @@ YUI.add('timepicker', function(Y){
                       }
                       
                   }
-                  this.fire('timechange', this.get('time'));
+                  this._syncTime();
+                  
                   this.syncUI();
               },
               

@@ -32,20 +32,18 @@
         picker.render();
         picker.hide();
         picker.subscribe('timechange', function(e){
-            var hour = e.hour;
-            Y.get('#time').set('value', hour);
+            var hour = e.hour,
+            minute = e.minute,
+            am         = e.ampm;
+            Y.get('#time').set('value', hour+':'+minute+am);
         });
         //picker.move(20,20);
         
         function handleClick(e){
             var target =e.target;
             if(target.test('#time')){
-
-
                 picker.toggle();
-
             }
-
         }
         
         Y.get('#main').on('click', handleClick);
