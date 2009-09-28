@@ -13,6 +13,8 @@ YUI.add('timepicker', function(Y){
     HOUR_CLASS  = 'hour',
     MINUTE_CLASS= 'minute',
     AMPM_CLASS  = 'ampm',
+    AM          = 0,
+    PM          = 1,
     NAME        = 'NAME',
     ROW         = 'row';
     
@@ -48,7 +50,8 @@ YUI.add('timepicker', function(Y){
         time:{
             value:{
                 hour:0,
-                minute:0
+                minute:0,
+                ampm:AM
             }
         },
     
@@ -71,7 +74,15 @@ YUI.add('timepicker', function(Y){
     
     Y.extend(Timepicker, Widget, {
         
+        
+              /* static vars */
+              
+              AM:AM,
+              
+              PM:PM,
+        
               _model : {ampm:{},hour:{},minute:{}},
+              
         
             
               initializer:function(){
@@ -91,21 +102,21 @@ YUI.add('timepicker', function(Y){
               
               _syncTime:function(){
                   var time = this.get('time'),
-                  ampm = this.get('time.ampm') || 'a';
-                  strings = this.get('strings');
-                  this.set('time.fullString12hr', 
-                            time.hour + 
-                            strings.seperator + 
-                            time.minute + 
-                            strings[ampm]
-                           );
+                  ampm = this.get('time.ampm'),
+                  strings = this.get('strings'),
+                  seperator = this.get('strings.seperator');
                   
-                  var hour = (ampm.toUpperCase == this.get('strings.pm')) ? ampm + 12 : ampm;
+                  ampmString = (ampm == AM) ? this.get('strings.am') : this.get('strings.pm');
+                  this.set('time.12hour', time.hour + seperator + time.minute + ampmString);
                   
+                  var hour = (ampm == PM) ? parseInt(time.hour,10) + 12 : parseInt(time.hour,10);
+     
                   if(hour == 24 || hour == 0 ) hour = Math.abs(hour-12);
+
                   
-                  this.set('time.fullString24hr', hour + strings.seperator + time.minute);
+                  this.set('time.24hour', hour + seperator + time.minute);
                   
+                  console.log(this.get('time'));
                   this.fire('timechange', this.get('time'));
               },
               
@@ -120,11 +131,20 @@ YUI.add('timepicker', function(Y){
                   var targ = e.target;
                   if(targ.test('.'+Timepicker[CELL_CLASS])){
                       var time = {};
+                     
                       var value = e.target.get('innerHTML');
                       if(targ.hasClass(Timepicker[HOUR_CLASS])){
                           this.set('time.hour',value);
                       }else if (targ.hasClass(Timepicker[AMPM_CLASS])){
-                          this.set('time.ampm', value);
+                          var amString = this.get('strings.am'),
+                              pmString = this.get('strings.pm');
+                              
+                          if(value == amString){
+                              this.set('time.ampm', AM);
+                          } else{
+                              this.set('time.ampm', PM);
+                          }
+                          
                       }else{
                           this.set('time.minute', value);
                       }
@@ -185,10 +205,15 @@ YUI.add('timepicker', function(Y){
               syncUI: function(){
                   var time = this.get('time');
                   cells = this.get('contentBox').queryAll('li');
-                  cells.each(function(cell){
-                      cell.removeClass('active');
-                  });
+                  cells.removeClass('active');
                   var m = this._model;
+                  if(time.ampm == AM){
+                      m.ampm.AM.addClass('active');
+                  }else if(time.ampm == PM){
+                      m.ampm.PM.addClass('active');
+                  }
+                  m.minute[time.minute].addClass('active');
+                  m.hour[time.hour].addClass('active');
                     
               }
           });

@@ -28,14 +28,19 @@
 
 <script type="text/javascript" charset="utf-8">
     YUI().use('timepicker', function(Y){
-        var picker = new Y.p.Timepicker({contentBox: 'div.foo', time:{hour:'2', minute:'45'}, strings:{am:'F', pm:'C'}});
+        var picker = new Y.p.Timepicker({contentBox: 'div.foo', time:{hour:'2', minute:'45'}, strings:{am:'F', pm:'C', seperator:'h'}});
         picker.render();
         picker.hide();
         picker.subscribe('timechange', function(e){
+
             var hour = e.hour,
             minute = e.minute,
             am         = e.ampm;
-            Y.get('#time').set('value', hour+':'+minute+am);
+            
+            if(am == picker.AM){
+                console.log('Am!');
+            }
+            Y.get('#time').set('value',e['12hour']);
         });
         //picker.move(20,20);
         
