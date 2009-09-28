@@ -1,38 +1,56 @@
 YUI.add('timepicker', function(Y){
     
-    var Lang    = Y.Lang,
-    Widget      = Y.Widget,
-    Position    = Y.WidgetPosition,
-    Node        = Y.Node,
+    var Widget      = Y.Widget,
     getClassName= Y.ClassNameManager.getClassName,
+    
+    //repeated and/or magic strings
     NAMESPACE   = 'p',
     DISPLAY     = 'display',
     CONSTRUCTOR = 'Timepicker',
-    NONE        = 'none',
     CELL_CLASS  = 'cell',
     HOUR_CLASS  = 'hour',
     MINUTE_CLASS= 'minute',
     AMPM_CLASS  = 'ampm',
-    AM          = 0,
-    PM          = 1,
     NAME        = 'NAME',
-    ROW         = 'row';
+    ROW         = 'row',
+    
+    //constants for AM & PM
+    AM          = 0,
+    PM          = 1;
+
     
     /* utils */
+    
+    /**
+     * Pad numbers to two digits
+     * @private
+     * @method pad
+     * @param {Number} num the number to bad
+     * @returns {String} padded number as string
+     * @type String|Object|Array|Boolean|Number
+     */
     function pad(num){
         return (num < 10) ? '0' + num : num;
     };
 
+    /**
+     * Creates a cell based on the little template defined in "str" 
+     * @private
+     * @method makeCell
+     * @param {String} str The contents of the cell
+     * @param {String} rowId the unique classname for the row to identify it later
+     *
+     * @returns {String} returns the assembled html string
+     */
+    
     function makeCell(str, rowId){
-        var thisClass = Y.ClassNameManager.getClassName(Timepicker.NAME, Timepicker[str]);
-        var str = '<li class="'+thisClass+' '+Timepicker[CELL_CLASS]+' '+Timepicker[rowId]+'">'+str+'</li>';
+        var thisClass = getClassName(Timepicker[NAME], Timepicker[str]),
+            str = '<li class="'+thisClass+' '+Timepicker[CELL_CLASS]+' '+Timepicker[rowId]+'">'+str+'</li>';
         return str;
     }
 
-    function makeRow(str, c){
-        return '<ol>'+str+'</ol>';
-    }
     
+    //create the constructor, chain the parent
     function Timepicker(config){
          Timepicker.superclass.constructor.apply(this, arguments); 
     }        
@@ -40,12 +58,6 @@ YUI.add('timepicker', function(Y){
     Timepicker[NAME] = 'timepicker';
     
     Timepicker.ATTRS = {
-        
-        separator:{
-          value:{
-              
-          }  
-        },
         
         time:{
             value:{
@@ -64,6 +76,8 @@ YUI.add('timepicker', function(Y){
         }
     };
     
+    
+    //build class names
     Timepicker[HOUR_CLASS] = getClassName(Timepicker[NAME], HOUR_CLASS);
     Timepicker[MINUTE_CLASS] = getClassName(Timepicker[NAME], MINUTE_CLASS);
     Timepicker[AMPM_CLASS] = getClassName(Timepicker[NAME], AMPM_CLASS);
@@ -81,18 +95,18 @@ YUI.add('timepicker', function(Y){
               
               PM:PM,
         
+              /* the "model", actually a cache of dom refrences to find 
+                 elements quickly later */
               _model : {ampm:{},hour:{},minute:{}},
               
         
             
               initializer:function(){
-                  
-                  this.set('time.ampm', this.get('strings.am'));
-            
-                  
+                  this.set('time.ampm', AM);
               },
               
               destructor: function(){
+                  // nuke the model, which is storing references to dom objects
                   
                   delete(this._model.ampm);
                   delete(this._model.hour);
@@ -100,45 +114,69 @@ YUI.add('timepicker', function(Y){
                   
               },
               
+              /**
+               * This method syncs the value of time object,
+               * including building the strings for 12hr and 24hr
+               * also fires a 'timechange' event
+               * @method _syncTime
+               * @private
+               *
+               */
               _syncTime:function(){
+                  
+                  
                   var time = this.get('time'),
-                  ampm = this.get('time.ampm'),
+                  
+                  ampm = time.ampm,
                   strings = this.get('strings'),
-                  seperator = this.get('strings.seperator');
+                  seperator = this.get('strings.seperator'),
+                  minute    = pad(time.minute);
                   
+                  //build the string for ampm based on the strings
                   ampmString = (ampm == AM) ? this.get('strings.am') : this.get('strings.pm');
-                  this.set('time.12hour', time.hour + seperator + time.minute + ampmString);
                   
+                  //store the string representation of the 12 hour time
+                  this.set('time.s12hour', time.hour + seperator + minute + ampmString);
+                  
+                  //convert 12 hour to 24
                   var hour = (ampm == PM) ? parseInt(time.hour,10) + 12 : parseInt(time.hour,10);
-     
                   if(hour == 24 || hour == 0 ) hour = Math.abs(hour-12);
 
+                  //store the string for 24 hour time
+                  this.set('time.s24hour', hour + seperator + minute);
                   
-                  this.set('time.24hour', hour + seperator + time.minute);
-                  
-                  console.log(this.get('time'));
+                  //fire time change event
                   this.fire('timechange', this.get('time'));
               },
               
               _handleClick:function(e){
-          
+                  //dispatch 'cellclick' event on any clicks
                   if(e.target.test('.'+Timepicker[CELL_CLASS])){
                       this.fire('cellclick', this.get('time'));
                   }
               },
               
               _handleOver:function(e){
+                  //this handles mouseover events, which it uses to change
+                  //the store value of time as defined in the params
+                  
                   var targ = e.target;
+                  
+                  //make sure this is one of our cells
                   if(targ.test('.'+Timepicker[CELL_CLASS])){
-                      var time = {};
                      
                       var value = e.target.get('innerHTML');
+                      
+                      //we are using classnames to figure out which row is which
                       if(targ.hasClass(Timepicker[HOUR_CLASS])){
                           this.set('time.hour',value);
                       }else if (targ.hasClass(Timepicker[AMPM_CLASS])){
+                          
+                          //ugly, but otherwise we would need to embed metadata
+                          //somewhere else, this seemed easy enough
                           var amString = this.get('strings.am'),
                               pmString = this.get('strings.pm');
-                              
+                        
                           if(value == amString){
                               this.set('time.ampm', AM);
                           } else{
@@ -157,6 +195,12 @@ YUI.add('timepicker', function(Y){
               
               renderUI: function(){
                   //FIXME: This could be more efficient!
+                  
+                  /*
+                  current implementation builds three ordered lists, one for 
+                  each row. Then we use the makeCell private method tp create a cell
+                  with the given class, based on string constants defined up top
+                  */
                   var cb = this.get('contentBox'),
                        m = this._model;
 
@@ -166,6 +210,8 @@ YUI.add('timepicker', function(Y){
                   
                   var am = row1.create(makeCell(this.get('strings.am'),AMPM_CLASS)),
                       pm = row1.create(makeCell(this.get('strings.pm'),AMPM_CLASS));
+                      
+                      
                   m[AMPM_CLASS]['AM'] = am;
                   m[AMPM_CLASS]['PM'] = pm;
                   row1.appendChild(am);
@@ -192,27 +238,44 @@ YUI.add('timepicker', function(Y){
                  
               },
               
+              /**
+               * Show/hide the widget
+               * @method toggle
+               */              
               toggle: function(){
                   this[(this.get('visible') ? 'hide' : 'show')]();
               },
               
               bindUI: function(){
+                  
                   var cb = this.get('contentBox');
                   cb.on('click', this._handleClick, this);
                   cb.on('mouseover', this._handleOver, this);
               },
               
               syncUI: function(){
+                  
+                  //get the current tine vlaue
                   var time = this.get('time');
+                  
+                  //get all of the li elements to clear their active state
                   cells = this.get('contentBox').queryAll('li');
                   cells.removeClass('active');
+                  
+                  
                   var m = this._model;
+                  //handle ampm row, because of l10n can't count on
+                  //the value, so instead we use the "constant"
                   if(time.ampm == AM){
                       m.ampm.AM.addClass('active');
                   }else if(time.ampm == PM){
                       m.ampm.PM.addClass('active');
                   }
+                  
+                  //handle minute row
                   m.minute[time.minute].addClass('active');
+                  
+                  //handle hour row
                   m.hour[time.hour].addClass('active');
                     
               }

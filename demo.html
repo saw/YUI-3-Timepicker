@@ -28,7 +28,7 @@
 
 <script type="text/javascript" charset="utf-8">
     YUI().use('timepicker', function(Y){
-        var picker = new Y.p.Timepicker({contentBox: 'div.foo', time:{hour:'2', minute:'45'}, strings:{am:'F', pm:'C', seperator:'h'}});
+        var picker = new Y.p.Timepicker({contentBox: 'div.foo', time:{hour:'2', minute:'45'}, strings:{am:'AM', pm:'PM', seperator:':'}});
         picker.render();
         picker.hide();
         picker.subscribe('timechange', function(e){
@@ -37,10 +37,8 @@
             minute = e.minute,
             am         = e.ampm;
             
-            if(am == picker.AM){
-                console.log('Am!');
-            }
-            Y.get('#time').set('value',e['12hour']);
+
+            Y.get('#time').set('value',e.s12hour);
         });
         //picker.move(20,20);
         
