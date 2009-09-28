@@ -4,16 +4,17 @@
 <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
     <title>demo</title>
+    <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?3.0.0b1/build/cssreset/reset-min.css&3.0.0b1/build/cssfonts/fonts-min.css">
     <link rel="stylesheet" href="timepicker.css" type="text/css" charset="utf-8" />
 </head>
 <body>
     <div id="main">
         <h1>This is a timepicker</h1>
         <form action="demo.html" method="post">
+
+            <label for="time">Time: </label><input type="text" name="time" value="2:45AM" id="time">
             <div class="foo">
             </div>
-
-            <label for="time">Time: </label><input type="text" name="time" value="00:00" id="time">
 
             <p><input type="submit" value="Continue &rarr;" /></p>
                         
@@ -28,19 +29,16 @@
 
 <script type="text/javascript" charset="utf-8">
     YUI().use('timepicker', function(Y){
-        var picker = new Y.p.Timepicker({contentBox: 'div.foo', time:{hour:'2', minute:'45'}, strings:{am:'AM', pm:'PM', seperator:':'}});
+        
+        var picker = new Y.p.Timepicker({contentBox: 'div.foo', time:{hour:0, minute:0}, strings:{am:'AM', pm:'PM', seperator:':'}});
+        
+        picker.set('time.ampm', picker.AM);
         picker.render();
         picker.hide();
         picker.subscribe('timechange', function(e){
-
-            var hour = e.hour,
-            minute = e.minute,
-            am         = e.ampm;
-            
-
             Y.get('#time').set('value',e.s12hour);
         });
-        //picker.move(20,20);
+
         
         function handleClick(e){
             var target =e.target;

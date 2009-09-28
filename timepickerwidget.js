@@ -1,18 +1,26 @@
 YUI.add('timepicker', function(Y){
     
-    var Widget      = Y.Widget,
+
+    var array       = Y.Array,
     getClassName= Y.ClassNameManager.getClassName,
     
     //repeated and/or magic strings
     NAMESPACE   = 'p',
     DISPLAY     = 'display',
     CONSTRUCTOR = 'Timepicker',
+    
     CELL_CLASS  = 'cell',
     HOUR_CLASS  = 'hour',
     MINUTE_CLASS= 'minute',
     AMPM_CLASS  = 'ampm',
+    ACTIVE_CLASS= 'active',
+    
     NAME        = 'NAME',
     ROW         = 'row',
+    AMSTR_KEY   = 'strings.am',
+    PMSTR_KEY   = 'strings.pm',
+    
+    
     
     //constants for AM & PM
     AM          = 0,
@@ -84,9 +92,10 @@ YUI.add('timepicker', function(Y){
     Timepicker[HOUR_CLASS] = getClassName(Timepicker[NAME], HOUR_CLASS, ROW);
     Timepicker[MINUTE_CLASS] = getClassName(Timepicker[NAME], MINUTE_CLASS, ROW);
     Timepicker[CELL_CLASS] = getClassName(Timepicker[NAME], CELL_CLASS);
+    Timepicker[ACTIVE_CLASS] = getClassName(Timepicker[NAME], ACTIVE_CLASS);
     
     
-    Y.extend(Timepicker, Widget, {
+    Y.extend(Timepicker, Y.Widget, {
         
         
               /* static vars */
@@ -133,10 +142,13 @@ YUI.add('timepicker', function(Y){
                   minute    = pad(time.minute);
                   
                   //build the string for ampm based on the strings
-                  ampmString = (ampm == AM) ? this.get('strings.am') : this.get('strings.pm');
+                  ampmString = (ampm == AM) ? this.get(AMSTR_KEY) : this.get(PMSTR_KEY);
                   
                   //store the string representation of the 12 hour time
-                  this.set('time.s12hour', time.hour + seperator + minute + ampmString);
+
+                  this.set('time.s12hour', 
+                          ((time.hour == 0) ? 12 : time.hour) + 
+                          seperator + minute + ampmString);
                   
                   //convert 12 hour to 24
                   var hour = (ampm == PM) ? parseInt(time.hour,10) + 12 : parseInt(time.hour,10);
@@ -174,8 +186,8 @@ YUI.add('timepicker', function(Y){
                           
                           //ugly, but otherwise we would need to embed metadata
                           //somewhere else, this seemed easy enough
-                          var amString = this.get('strings.am'),
-                              pmString = this.get('strings.pm');
+                          var amString = this.get(AMSTR_KEY),
+                              pmString = this.get(PMSTR_KEY);
                         
                           if(value == amString){
                               this.set('time.ampm', AM);
@@ -203,38 +215,56 @@ YUI.add('timepicker', function(Y){
                   */
                   var cb = this.get('contentBox'),
                        m = this._model;
-
-                  var row1 = cb.create('<ol>'),
-                      row2 = cb.create('<ol>'),
-                      row3 = cb.create('<ol>');
+                       
+                  //create row function is very simple...
+                  function createRow(){ return cb.create('<ol>');};
                   
-                  var am = row1.create(makeCell(this.get('strings.am'),AMPM_CLASS)),
-                      pm = row1.create(makeCell(this.get('strings.pm'),AMPM_CLASS));
-                      
-                      
-                  m[AMPM_CLASS]['AM'] = am;
-                  m[AMPM_CLASS]['PM'] = pm;
-                  row1.appendChild(am);
-                  row1.appendChild(pm);
-                  for(var i=1; i<=12; i++){
-                      var cell = row2.create(makeCell(i , HOUR_CLASS));
-                      m[HOUR_CLASS][i] = cell;
-                      row2.appendChild(cell);
+                  var row = [];
+                  //only need three rows
+                  for (var i=0; i <= 3; i++) {
+                      row[i] = createRow();
+                  };
+                  
+                  //wrap make cell in node create
+                  function mc (str, c){
+                      return cb.create(makeCell(str, c));
+                  };
+                  
+
+                  m[AMPM_CLASS]['AM'] = mc(this.get(AMSTR_KEY),AMPM_CLASS);
+                  m[AMPM_CLASS]['PM'] = mc(this.get(PMSTR_KEY),AMPM_CLASS);
+                  row[0].appendChild(m[AMPM_CLASS]['AM']);
+                  row[0].appendChild(m[AMPM_CLASS]['PM']);
+                  
+                  //build rows, creating a function to use only twice, but
+                  //still remove duplicates
+                  function assembleRow(row, max, step, c){
+                      for(var i =0; i<=max; i=i+step){
+                          var cell = mc(i, c);
+                          m[c][i] = cell;
+                          row.appendChild(cell);
+                      } 
                   }
-                  for(var i=0; i<=45; i= i +15){
-                      var cell = row3.create(makeCell(i , MINUTE_CLASS));
-                      m[MINUTE_CLASS][i] = cell;
-                      row3.appendChild(cell);
-                  }
+                     
+                  assembleRow(row[1], 12, 1, HOUR_CLASS);
+
+                  assembleRow(row[2], 45, 15, MINUTE_CLASS);
+                  
+                  this._model[AMPM_CLASS].row = row[0];
+                  this._model[HOUR_CLASS].row = row[1];
+                  this._model[MINUTE_CLASS].row = row[2];
                   
                   var parent = cb.create('<div>');
                   
-                  parent.appendChild(row1);
-                  parent.appendChild(row2);
-                  parent.appendChild(row3);
+                  
+                  array.each(row, function(item){
+                      parent.appendChild(item);
+                  });
+
                   cb.appendChild(parent);
             
-                  
+                  //store for later
+                  this.allCells = cb.queryAll('li');
                  
               },
               
@@ -257,27 +287,33 @@ YUI.add('timepicker', function(Y){
                   
                   //get the current tine vlaue
                   var time = this.get('time');
-                  
+                 
                   //get all of the li elements to clear their active state
-                  cells = this.get('contentBox').queryAll('li');
-                  cells.removeClass('active');
-                  
+                  this.allCells.removeClass(Timepicker[ACTIVE_CLASS]);
                   
                   var m = this._model;
+                  var apos = 0;
+                  
                   //handle ampm row, because of l10n can't count on
                   //the value, so instead we use the "constant"
                   if(time.ampm == AM){
-                      m.ampm.AM.addClass('active');
+                      m.ampm.AM.addClass(Timepicker[ACTIVE_CLASS]);
+                      apos = m.ampm.AM.getX();
                   }else if(time.ampm == PM){
-                      m.ampm.PM.addClass('active');
+                      m.ampm.PM.addClass(Timepicker[ACTIVE_CLASS]);
+                      apos = m.ampm.PM.getX();
                   }
                   
                   //handle minute row
-                  m.minute[time.minute].addClass('active');
+                  m.minute[time.minute].addClass(Timepicker[ACTIVE_CLASS]);
+                 
                   
                   //handle hour row
-                  m.hour[time.hour].addClass('active');
-                    
+                  m.hour[time.hour].addClass(Timepicker[ACTIVE_CLASS]);
+                  
+                  m.hour.row.setX(apos);
+                  m.minute.row.setX(m.hour[time.hour].getX());
+     
               }
           });
           
@@ -286,4 +322,4 @@ YUI.add('timepicker', function(Y){
     Y[NAMESPACE][CONSTRUCTOR] = Timepicker;
     
     
-}, '3.0.0b1', {requires:['oop', 'event-custom', 'attribute','base', 'dom', 'classnamemanager','widget','event']});
+}, '1.0.0', {requires:['oop', 'event-custom', 'attribute','base', 'dom', 'classnamemanager','widget','event']});
