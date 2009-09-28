@@ -47,7 +47,6 @@ YUI.add('timepicker', function(Y){
         
         time:{
             value:{
-                ampm:'AM',
                 hour:0,
                 minute:0
             }
@@ -56,7 +55,8 @@ YUI.add('timepicker', function(Y){
         strings: {
             value: {
                 am : "AM",
-                pm : "PM"
+                pm : "PM",
+                seperator : ':'
             }
         }
     };
@@ -74,7 +74,12 @@ YUI.add('timepicker', function(Y){
               _model : {ampm:{},hour:{},minute:{}},
         
             
-              initializer:function(){},
+              initializer:function(){
+                  
+                  this.set('time.ampm', this.get('strings.am'));
+            
+                  
+              },
               
               destructor: function(){
                   
@@ -86,14 +91,20 @@ YUI.add('timepicker', function(Y){
               
               _syncTime:function(){
                   var time = this.get('time'),
-                  seperator = this.get('seperator');
-                  this.set('time.fullString12hr', time.hour + seperator + time.minute + time.ampm);
+                  ampm = this.get('time.ampm') || 'a';
+                  strings = this.get('strings');
+                  this.set('time.fullString12hr', 
+                            time.hour + 
+                            strings.seperator + 
+                            time.minute + 
+                            strings[ampm]
+                           );
                   
-                  var hour = (time.ampm.toUpperCase == 'PM') ? time.ampm + 12 : time.ampm;
+                  var hour = (ampm.toUpperCase == this.get('strings.pm')) ? ampm + 12 : ampm;
                   
                   if(hour == 24 || hour == 0 ) hour = Math.abs(hour-12);
                   
-                  this.set('time.fullString24hr', hour + seperator + time.minute);
+                  this.set('time.fullString24hr', hour + strings.seperator + time.minute);
                   
                   this.fire('timechange', this.get('time'));
               },
@@ -101,7 +112,7 @@ YUI.add('timepicker', function(Y){
               _handleClick:function(e){
           
                   if(e.target.test('.'+Timepicker[CELL_CLASS])){
-                      console.log('cell');
+                      this.fire('cellclick', this.get('time'));
                   }
               },
               
@@ -133,8 +144,8 @@ YUI.add('timepicker', function(Y){
                       row2 = cb.create('<ol>'),
                       row3 = cb.create('<ol>');
                   
-                  var am = row1.create(makeCell('AM',AMPM_CLASS)),
-                      pm = row1.create(makeCell('PM',AMPM_CLASS));
+                  var am = row1.create(makeCell(this.get('strings.am'),AMPM_CLASS)),
+                      pm = row1.create(makeCell(this.get('strings.pm'),AMPM_CLASS));
                   m[AMPM_CLASS]['AM'] = am;
                   m[AMPM_CLASS]['PM'] = pm;
                   row1.appendChild(am);
@@ -178,11 +189,7 @@ YUI.add('timepicker', function(Y){
                       cell.removeClass('active');
                   });
                   var m = this._model;
-                  for(key in time){
-                      if (time[key]){
-                          m[key][time[key]].addClass('active');
-                      }
-                  }
+                    
               }
           });
           

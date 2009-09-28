@@ -28,7 +28,7 @@
 
 <script type="text/javascript" charset="utf-8">
     YUI().use('timepicker', function(Y){
-        var picker = new Y.p.Timepicker({contentBox: 'div.foo', time:{hour:'2', minute:'45'}});
+        var picker = new Y.p.Timepicker({contentBox: 'div.foo', time:{hour:'2', minute:'45'}, strings:{am:'F', pm:'C'}});
         picker.render();
         picker.hide();
         picker.subscribe('timechange', function(e){
