@@ -112,6 +112,9 @@ YUI.add('timepicker', function(Y){
             
               initializer:function(){
                   this.set('time.ampm', AM);
+                  var hour = this.get('time.hour');
+                  this.set('time.hour', ((hour == 0) ? 12 : hour));
+
               },
               
               destructor: function(){
@@ -238,17 +241,17 @@ YUI.add('timepicker', function(Y){
                   
                   //build rows, creating a function to use only twice, but
                   //still remove duplicates
-                  function assembleRow(row, max, step, c){
-                      for(var i =0; i<=max; i=i+step){
+                  function assembleRow(start, row, max, step, c){
+                      for(var i = start; i<=max; i=i+step){
                           var cell = mc(i, c);
                           m[c][i] = cell;
                           row.appendChild(cell);
                       } 
                   }
                      
-                  assembleRow(row[1], 12, 1, HOUR_CLASS);
+                  assembleRow(1, row[1], 12, 1, HOUR_CLASS);
 
-                  assembleRow(row[2], 45, 15, MINUTE_CLASS);
+                  assembleRow(0, row[2], 45, 15, MINUTE_CLASS);
                   
                   this._model[AMPM_CLASS].row = row[0];
                   this._model[HOUR_CLASS].row = row[1];
