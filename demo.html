@@ -169,7 +169,7 @@ YUI().use('timepicker', function(Y){
         picker.render();
         picker.hide();
         picker.subscribe('timechange', function(e){
-            Y.get('#time').set('value',e.s12hour);
+            Y.get('#time').set('value',e.s24hour);
         });
         
         picker.subscribe('cellclick', function(e){

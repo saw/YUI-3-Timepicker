@@ -156,6 +156,7 @@ YUI.add('timepicker', function(Y){
                   //convert 12 hour to 24
                   var hour = (ampm == PM) ? parseInt(time.hour,10) + 12 : parseInt(time.hour,10);
                   if(hour == 24 || hour == 0 ) hour = Math.abs(hour-12);
+                  if(hour == 12 && ampm == AM) hour = 0;
 
                   //store the string for 24 hour time
                   this.set('time.s24hour', hour + seperator + minute);
