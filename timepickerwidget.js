@@ -265,7 +265,10 @@ YUI.add('timepicker', function(Y){
             
                   //store for later
                   this.allCells = cb.queryAll('li');
-                 
+
+                  m.ampm.row.setX(5);
+                  m.minute.row.setX(5);
+                  m.hour.row.setX(5);                 
               },
               
               /**
@@ -274,6 +277,7 @@ YUI.add('timepicker', function(Y){
                */              
               toggle: function(){
                   this[(this.get('visible') ? 'hide' : 'show')]();
+                  this.syncUI(); //IE 6 has an issue without this
               },
               
               bindUI: function(){
@@ -312,6 +316,7 @@ YUI.add('timepicker', function(Y){
                   m.hour[time.hour].addClass(Timepicker[ACTIVE_CLASS]);
                   
                   m.hour.row.setX(apos);
+
                   m.minute.row.setX(m.hour[time.hour].getX());
      
               }

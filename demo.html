@@ -38,6 +38,10 @@
         picker.subscribe('timechange', function(e){
             Y.get('#time').set('value',e.s12hour);
         });
+        
+        picker.subscribe('cellclick', function(e){
+           this.hide(); 
+        },picker);
 
         
         function handleClick(e){
