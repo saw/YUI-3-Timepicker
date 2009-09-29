@@ -5,7 +5,7 @@ YUI.add('timepicker', function(Y){
     getClassName= Y.ClassNameManager.getClassName,
     
     //repeated and/or magic strings
-    NAMESPACE   = 'p',
+    NAMESPACE   = 'Saw',
     DISPLAY     = 'display',
     CONSTRUCTOR = 'Timepicker',
     
@@ -265,10 +265,7 @@ YUI.add('timepicker', function(Y){
             
                   //store for later
                   this.allCells = cb.queryAll('li');
-
-                  m.ampm.row.setX(5);
-                  m.minute.row.setX(5);
-                  m.hour.row.setX(5);                 
+             
               },
               
               /**
