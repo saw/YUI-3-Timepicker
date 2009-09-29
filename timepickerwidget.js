@@ -328,4 +328,4 @@ YUI.add('timepicker', function(Y){
     Y[NAMESPACE][CONSTRUCTOR] = Timepicker;
     
     
-}, '0.1.0', {requires:['oop', 'event-custom', 'attribute','base', 'dom', 'classnamemanager','widget','event']});
+}, '0.1.1', {requires:['oop', 'event-custom', 'attribute','base', 'dom', 'classnamemanager','widget','event']});
