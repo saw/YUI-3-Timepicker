@@ -68,6 +68,8 @@ YUI.add('timepicker', function(Y){
     AMSTR_KEY   = 'strings.am',
     PMSTR_KEY   = 'strings.pm',
     
+    DELAY_KEY   = 'delay',
+    
     
     
     //constants for AM & PM
@@ -122,6 +124,10 @@ YUI.add('timepicker', function(Y){
                 ampm:AM
             }
         },
+        
+        delay:{
+            value:15
+        },
     
         strings: {
             value: {
@@ -156,6 +162,9 @@ YUI.add('timepicker', function(Y){
               /* the "model", actually a cache of dom refrences to find 
                  elements quickly later */
               _model : {ampm:{},hour:{},minute:{}},
+              
+              /* allow a short delay before highlight */
+              _timer: null,
               
         
             
@@ -225,37 +234,55 @@ YUI.add('timepicker', function(Y){
                   //this handles mouseover events, which it uses to change
                   //the store value of time as defined in the params
                   
-                  var targ = e.target;
+                  var targ = e.target, delay = this.get(DELAY_KEY);
                   
-                  //make sure this is one of our cells
-                  if(targ.test('.'+Timepicker[CELL_CLASS])){
-                     
-                      var value = e.target.get('innerHTML');
-                      
-                      //we are using classnames to figure out which row is which
-                      if(targ.hasClass(Timepicker[HOUR_CLASS])){
-                          this.set('time.hour',value);
-                      }else if (targ.hasClass(Timepicker[AMPM_CLASS])){
-                          
-                          //ugly, but otherwise we would need to embed metadata
-                          //somewhere else, this seemed easy enough
-                          var amString = this.get(AMSTR_KEY),
-                              pmString = this.get(PMSTR_KEY);
-                        
-                          if(value == amString){
-                              this.set('time.ampm', AM);
-                          } else{
-                              this.set('time.ampm', PM);
-                          }
-                          
-                      }else{
-                          this.set('time.minute', value);
-                      }
-                      
+                  if(this._timer){
+                      this._timer.cancel();
+                      this._timer = null;
                   }
-                  this._syncTime();
                   
-                  this.syncUI();
+                  this._timer = Y.later(delay, this, this._highlight, targ);
+                  
+                  
+              },
+              
+              _highlight:function(targ){
+                  //make sure this is one of our cells
+                    if(targ.test('.'+Timepicker[CELL_CLASS])){
+
+                        var value = targ.get('innerHTML');
+
+                        //we are using classnames to figure out which row is which
+                        if(targ.hasClass(Timepicker[HOUR_CLASS])){
+                            this.set('time.hour',value);
+                        }else if (targ.hasClass(Timepicker[AMPM_CLASS])){
+
+                            //ugly, but otherwise we would need to embed metadata
+                            //somewhere else, this seemed easy enough
+                            var amString = this.get(AMSTR_KEY),
+                                pmString = this.get(PMSTR_KEY);
+
+                            if(value == amString){
+                                this.set('time.ampm', AM);
+                            } else{
+                                this.set('time.ampm', PM);
+                            }
+
+                        }else{
+                            this.set('time.minute', value);
+                        }
+
+                    }
+                    this._syncTime();
+
+                    this.syncUI();
+              },
+              
+              _handleOut:function(e){
+                  if(this._timer){
+                      this._timer.cancel();
+                      this._timer = null;
+                  }  
               },
               
               renderUI: function(){
@@ -335,6 +362,7 @@ YUI.add('timepicker', function(Y){
                   var cb = this.get('contentBox');
                   cb.on('click', this._handleClick, this);
                   cb.on('mouseover', this._handleOver, this);
+                  cb.on('mouseout', this._handleOut, this);
               },
               
               syncUI: function(){

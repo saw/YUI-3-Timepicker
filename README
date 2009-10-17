@@ -1,6 +1,7 @@
 About The Timepicker
 
-This is based on the very slick time picker by Maxime Haineault. Its a YUI 3 widget and currently requires YUI 3 beta 1
+This is based on the very slick time picker by Maxime Haineault. Its a YUI 3 widget and currently requires YUI 3 GA
+
 Useage
 
 Create a form...
@@ -48,6 +49,10 @@ And write your script...
             
 Available configuration properties. (sorry for the lack of formatting, in a hurry right now)
                 Timepicker.ATTRS = {
+                
+                    delay:{
+                        value:15
+                    },
 
                     time:{
                         value:{
