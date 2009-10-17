@@ -54,7 +54,6 @@ YUI.add('timepicker', function(Y){
     
     //repeated and/or magic strings
     NAMESPACE   = 'Saw',
-    DISPLAY     = 'display',
     CONSTRUCTOR = 'Timepicker',
     
     CELL_CLASS  = 'cell',
@@ -89,7 +88,7 @@ YUI.add('timepicker', function(Y){
      */
     function pad(num){
         return (num < 10) ? '0' + num : num;
-    };
+    }
 
     /**
      * Creates a cell based on the little template defined in "str" 
@@ -103,8 +102,8 @@ YUI.add('timepicker', function(Y){
     
     function makeCell(str, rowId){
         var thisClass = getClassName(Timepicker[NAME], Timepicker[str]),
-            str = '<li class="'+thisClass+' '+Timepicker[CELL_CLASS]+' '+Timepicker[rowId]+'">'+str+'</li>';
-        return str;
+            myStr = '<li class="'+thisClass+' '+Timepicker[CELL_CLASS]+' '+Timepicker[rowId]+'">'+str+'</li>';
+        return myStr;
     }
 
     
@@ -171,7 +170,7 @@ YUI.add('timepicker', function(Y){
               initializer:function(){
                   this.set('time.ampm', AM);
                   var hour = this.get('time.hour');
-                  this.set('time.hour', ((hour == 0) ? 12 : hour));
+                  this.set('time.hour', ((hour === 0) ? 12 : hour));
 
               },
               
@@ -198,9 +197,8 @@ YUI.add('timepicker', function(Y){
                   var time = this.get('time'),
                   
                   ampm = time.ampm,
-                  strings = this.get('strings'),
                   seperator = this.get('strings.seperator'),
-                  minute    = pad(time.minute);
+                  minute    = pad(time.minute),
                   
                   //build the string for ampm based on the strings
                   ampmString = (ampm == AM) ? this.get(AMSTR_KEY) : this.get(PMSTR_KEY);
@@ -208,13 +206,13 @@ YUI.add('timepicker', function(Y){
                   //store the string representation of the 12 hour time
 
                   this.set('time.s12hour', 
-                          ((time.hour == 0) ? 12 : time.hour) + 
+                          ((time.hour === 0) ? 12 : time.hour) + 
                           seperator + minute + ampmString);
                   
                   //convert 12 hour to 24
                   var hour = (ampm == PM) ? parseInt(time.hour,10) + 12 : parseInt(time.hour,10);
-                  if(hour == 24 || hour == 0 ) hour = Math.abs(hour-12);
-                  if(hour == 12 && ampm == AM) hour = 0;
+                  if(hour == 24 || hour === 0 ) {hour = Math.abs(hour-12);}
+                  if(hour == 12 && ampm == AM) {hour = 0;}
 
                   //store the string for 24 hour time
                   this.set('time.s24hour', hour + seperator + minute);
@@ -259,8 +257,7 @@ YUI.add('timepicker', function(Y){
 
                             //ugly, but otherwise we would need to embed metadata
                             //somewhere else, this seemed easy enough
-                            var amString = this.get(AMSTR_KEY),
-                                pmString = this.get(PMSTR_KEY);
+                            var amString = this.get(AMSTR_KEY);
 
                             if(value == amString){
                                 this.set('time.ampm', AM);
@@ -297,24 +294,24 @@ YUI.add('timepicker', function(Y){
                        m = this._model;
                        
                   //create row function is very simple...
-                  function createRow(){ return cb.create('<ol>');};
+                  function createRow(){ return cb.create('<ol>');}
                   
                   var row = [];
                   //only need three rows
                   for (var i=0; i <= 3; i++) {
                       row[i] = createRow();
-                  };
+                  }
                   
                   //wrap make cell in node create
                   function mc (str, c){
                       return cb.create(makeCell(str, c));
-                  };
+                  }
                   
 
-                  m[AMPM_CLASS]['AM'] = mc(this.get(AMSTR_KEY),AMPM_CLASS);
-                  m[AMPM_CLASS]['PM'] = mc(this.get(PMSTR_KEY),AMPM_CLASS);
-                  row[0].appendChild(m[AMPM_CLASS]['AM']);
-                  row[0].appendChild(m[AMPM_CLASS]['PM']);
+                  m[AMPM_CLASS].AM = mc(this.get(AMSTR_KEY),AMPM_CLASS);
+                  m[AMPM_CLASS].PM = mc(this.get(PMSTR_KEY),AMPM_CLASS);
+                  row[0].appendChild(m[AMPM_CLASS].AM);
+                  row[0].appendChild(m[AMPM_CLASS].PM);
                   
                   //build rows, creating a function to use only twice, but
                   //still remove duplicates
@@ -405,4 +402,4 @@ YUI.add('timepicker', function(Y){
     Y[NAMESPACE][CONSTRUCTOR] = Timepicker;
     
     
-}, '0.1.1', {requires:['oop', 'event-custom', 'attribute','base', 'dom', 'classnamemanager','widget','event']});
+}, '0.2.0', {requires:['oop', 'event-custom', 'attribute','base', 'dom', 'classnamemanager','widget','event']});
