@@ -1,3 +1,51 @@
+/*
+Copyright (c) 2009, Stephen Woods
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the name of the Stephen Woods nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY STEPHEN WOODS ''AS IS'' AND ANY
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL STEPHEN WOODS BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+Inspired by: http://haineault.com/media/jquery/ui-timepickr/page/
+This software is based on a concept by Maxime Haineault in code licensed under
+an MIT license. However, none of his code or implementation details will reviewed
+or used for this project.
+*/
+
+
+/**
+ * Great widgets from saw
+ * 
+ * @module widget
+ * @requires oop, event-custom, attribute, base, dom, classnamemanager, widget, event
+ */
+ 
+ 
+ /**
+  * Timepicker a YUI 3 implementation of the classic jQuery
+  * timepicker widget
+  * @class Timepicker
+  * @namespace Y.Saw
+  * @extends Widget
+  */
 YUI.add('timepicker', function(Y){
     
 
@@ -31,7 +79,7 @@ YUI.add('timepicker', function(Y){
     
     /**
      * Pad numbers to two digits
-     * @private
+     * @protected
      * @method pad
      * @param {Number} num the number to bad
      * @returns {String} padded number as string
@@ -43,7 +91,7 @@ YUI.add('timepicker', function(Y){
 
     /**
      * Creates a cell based on the little template defined in "str" 
-     * @private
+     * @protected
      * @method makeCell
      * @param {String} str The contents of the cell
      * @param {String} rowId the unique classname for the row to identify it later
@@ -94,6 +142,7 @@ YUI.add('timepicker', function(Y){
     Timepicker[CELL_CLASS] = getClassName(Timepicker[NAME], CELL_CLASS);
     Timepicker[ACTIVE_CLASS] = getClassName(Timepicker[NAME], ACTIVE_CLASS);
     
+
     
     Y.extend(Timepicker, Y.Widget, {
         
@@ -131,7 +180,7 @@ YUI.add('timepicker', function(Y){
                * including building the strings for 12hr and 24hr
                * also fires a 'timechange' event
                * @method _syncTime
-               * @private
+               * @protected
                *
                */
               _syncTime:function(){
