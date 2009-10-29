@@ -172,14 +172,13 @@ YUI().use('timepicker', function(Y){
         picker.set('time.ampm', picker.AM);
         picker.render();
         picker.hide();
-        picker.subscribe('timechange', function(e){
+        picker.subscribe('timeset', function(e){
             Y.get('#time').set('value',e.s24hour);
         });
         
         picker.subscribe('cellclick', function(e){
            this.hide(); 
         },picker);
-
         
         function handleClick(e){
             var target =e.target;

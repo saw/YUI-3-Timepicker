@@ -186,14 +186,36 @@ YUI.add('timepicker', function(Y){
               /**
                * This method syncs the value of time object,
                * including building the strings for 12hr and 24hr
-               * also fires a 'timechange' event
+               * also fires a 'timeset' event
                * @method _syncTime
                * @protected
                *
                */
               _syncTime:function(){
-                  
-                  
+
+                  /**
+                   * Fires when a new time has been set (after the time strings)
+                   * have been built. Use this event rather than timeChange.
+                   * @event timeset
+                   * @param {Object} the time attribute object with the following attributes
+                   * <dl>
+                   *   <dt>hour</dt>
+                   *   <dd>The 12 hour hour</dd>
+                   *   <dt>minute</dt>
+                   *   <dd>The minutes</dd>
+                   *   <dt>s12hour</dt>
+                   *   <dd>A string representing the 12 hour time, with a seperator and an am/pm indicator as defined in strings</dd>
+                   *   <dt>s24hour</dt>
+                   *   <dd>A string representing the 24 hour time, with the seperator defined in strings</dd>
+                   * </dl>
+                   */
+
+
+                   /**
+                    * Fires when a cell is clicked on
+                    * @event cellclick
+                    * @param event {Event.Facade} An Event Facade object
+                    */
                   var time = this.get('time'),
                   
                   ampm = time.ampm,
@@ -218,7 +240,7 @@ YUI.add('timepicker', function(Y){
                   this.set('time.s24hour', hour + seperator + minute);
                   
                   //fire time change event
-                  this.fire('timechange', this.get('time'));
+                  this.fire('timeset', this.get('time'));
               },
               
               _handleClick:function(e){
